@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
   <div class="row sideNavRow">
-    <div class="col-12 col-md-6 col-lg-4 col-xl-4 sideNav p-3">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 sideNav p-3">
       <div class="account">
         <div id="logo">
           <i class="material-icons proPic mt-2">person</i>
@@ -17,7 +17,7 @@
           <small>{{groupStatus}}</small>
         </div>
         <div class="ml-auto mt-2">
-          <a (click)="settings()">
+          <a>
             <i class="material-icons proPic">
               settings_applications
             </i>
@@ -96,8 +96,8 @@
     </div>
 
 
-    <div class="col-1" *ngIf="shallCreate||isEdit"></div>
-    <div class="col-12 col-sm-12 col-md-6  col-lg-8 chat pt-5" *ngIf="shallCreate||isEdit">
+    <div class="col-1" *ngIf="shallCreate"></div>
+    <div class="col-11 col-sm-11 col-md-5  col-lg-7  col-xl-7 chat pt-5" *ngIf="shallCreate||isEdit">
       <div class="groupHeader">
         <h4 *ngIf="shallCreate">Create a Chat Group</h4>
         <h4 *ngIf="isEdit">Edit This Group</h4>
@@ -130,7 +130,7 @@
           </button>
         </div>&nbsp; &nbsp;
         <div class="user pt-1">
-          <h5 style="margin-bottom:0" style ="color: #ec2e2c;">{{group.groupName}}</h5>
+          <h5 style ="color: #ec2e2c;margin-bottom:0">{{group.groupName}}</h5>
           <small style="font-style: italic">{{group.status}}</small>
         </div>
         <div class="icons ml-auto p-3" *ngIf="isAdmin">
