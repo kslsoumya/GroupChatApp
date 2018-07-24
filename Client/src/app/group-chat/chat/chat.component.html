@@ -1,0 +1,190 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+  <h3 style="color:white">Chatapp</h3>
+    <a class="nav-link active ml-auto" (click)="logOut()">
+        <i class="fa fa-sign-out cursorPointer fa-lg" style="color:white" aria-hidden="true"></i>
+      </a>
+</nav>
+
+<div class="container-fluid">
+  <div class="row sideNavRow">
+    <div class="col-12 col-md-6 col-lg-4 col-xl-4 sideNav p-3">
+      <div class="account">
+        <div id="logo">
+          <i class="material-icons proPic mt-2">person</i>
+        </div> &nbsp; &nbsp;
+        <div class="uname">
+          <h3>{{userName.split(' ')[0]}}</h3>
+          <small>{{groupStatus}}</small>
+        </div>
+        <div class="ml-auto mt-2">
+          <a (click)="settings()">
+            <i class="material-icons proPic">
+              settings_applications
+            </i>
+          </a>
+          <a (click)="newGroup()">
+            <i class="material-icons  proPic">
+              add_box
+            </i>
+          </a>
+        </div>
+      </div>
+      <hr>
+      <ul class="nav nav-justified mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" style="border-right:1px grey solid">
+          <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home"
+            aria-selected="true">
+            <i class="fa fa-address-book  d-block d-md-none " aria-hidden="true"></i>
+            <strong>Contacts</strong>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact"
+            aria-selected="false">
+            <i class="fa fa-users d-block d-md-none " aria-hidden="true"></i>
+            <strong>Groups</strong>
+          </a>
+        </li>
+      </ul>
+      <hr>
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+          <ul class="list-group list-group-flush" *ngIf="groupsList.length>0">
+            <h5 class="groupsHeading" style ="color:coral">My Groups</h5>
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let group of groupsList">
+              <button mat-mini-fab style="background-color:#da5b85">
+                <strong>{{group.groupName[0] | uppercase}}</strong>
+              </button>
+              <div class="nameStatus">
+                <h5 class="mb-0">
+                  <a (click)="groupSelectedToChat(group)">{{group.groupName}}</a>
+                </h5>
+                <small style="font-style: italic">{{group.status}}</small>
+              </div>
+              <div class="icons">
+                <i class="fa fa-toggle-off fa-2x cursorPointer" (click)="toggleGroupActive(group)" *ngIf="!group.isActive" aria-hidden="true"></i>
+                <i class="fa fa-toggle-on fa-2x cursorPointer" *ngIf="group.isActive" (click)="toggleGroupActive(group)" aria-hidden="true"></i>
+                <i class="material-icons cursorPointer" style="color:#de5706e8" (click)="deleteSelectedGroup(group.groupId,group.groupName)">delete</i>
+              </div>
+            </li>
+          </ul>
+
+
+          <ul class="list-group list-group-flush" *ngIf="activeGroups.length>0">
+            <h4 class="groupsHeading" style ="color:coral">Other Groups</h4>
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let actGroup of activeGroups">
+              <button mat-mini-fab style="background-color:#da5b85">
+                <strong>{{actGroup.groupName[0] | uppercase}}</strong>
+              </button>
+              <div class="nameStatus">
+                <h5 class="mb-0">
+                  <a (click)="groupSelectedToChat(actGroup)">{{actGroup.groupName}}</a>
+                </h5>
+                <small>{{actGroup.status}}</small>
+              </div>
+              <div class="icons">
+                <button class="btn btn-info" (click)="toggleJoin(actGroup.groupId)" *ngIf="!actGroup.isMember">Join</button>
+                &nbsp; &nbsp; &nbsp;
+                <button class="btn btn-danger" (click)="toggleJoin(actGroup.groupId)" *ngIf="actGroup.isMember">Leave
+                  <span class="badge badge-light" *ngIf="group!==undefined&&group.groupId!==actGroup.groupId">{{actGroup.messageList.length}}</span>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-1" *ngIf="shallCreate||isEdit"></div>
+    <div class="col-12 col-sm-12 col-md-6  col-lg-8 chat pt-5" *ngIf="shallCreate||isEdit">
+      <div class="groupHeader">
+        <h4 *ngIf="shallCreate">Create a Chat Group</h4>
+        <h4 *ngIf="isEdit">Edit This Group</h4>
+        <div class="addForm">
+          <mat-form-field class="form-field">
+            <input matInput type="text" placeholder="Title" name="groupTitle" [(ngModel)]="groupTitle" required>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" placeholder="Give a status" name="groupStatus" [(ngModel)]="groupStatus" required>
+          </mat-form-field>
+          <button class="btn btn-outline-info form-field" *ngIf="shallCreate" (click)="createGroup()">Create</button>
+          <button class="btn btn-outline-info form-field" *ngIf="isEdit" (click)="editGroupDetails()">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8  noGroup"  style ="text-align: center;" *ngIf="!isGroupSelected&&!shallCreate&&!isEdit">
+      <div class="jumbotron  animated infinite flash delay-90s">
+        <h1 class="display-4" style="font-style:italic">Hi , {{userName}}</h1>
+        <p class="lead">Welcome to Chatapp, You can create your groups and chat with other Active groups!</p>
+      </div>
+    </div>
+
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8 pr-1" style="padding-left:0;" *ngIf="isGroupSelected&&!shallCreate&&!isEdit">
+      <div class="chatHeader">
+        <div class="name pt-2 pl-2">
+          <button mat-mini-fab style="background-color:#da5b85">
+            <strong>{{group.groupName[0] | uppercase}}</strong>
+          </button>
+        </div>&nbsp; &nbsp;
+        <div class="user pt-1">
+          <h5 style="margin-bottom:0" style ="color: #ec2e2c;">{{group.groupName}}</h5>
+          <small style="font-style: italic">{{group.status}}</small>
+        </div>
+        <div class="icons ml-auto p-3" *ngIf="isAdmin">
+          <i class="fa fa-trash-o  cursorPointer fa-lg " (click)="deleteSelectedGroup(group.groupId,group.groupName)" 
+          style="color:#da5b85;" aria-hidden="true"></i> &nbsp; &nbsp;
+          <i class="fa fa-pencil-square-o cursorPointer fa-lg " style="color:#da5b85;" (click)="editGroup(group)" aria-hidden="true"></i>
+        </div>
+        <div *ngIf="!isAdmin" class="ml-auto p-2 mt-2">
+          <button class="btn btn-info" (click)="toggleJoin(group.groupId)" *ngIf="!group.isMember">Join</button>
+          <button class="btn btn-danger" (click)="toggleJoin(group.groupId)" *ngIf="group.isMember">Leave</button>
+        </div>
+      </div>
+
+
+
+      <div class="chat-history messaging" #scrollMe [scrollTop]="(scrollToTopChat)?0:scrollMe.scrollHeight" *ngIf="isGroupSelected">
+        <ul style="list-style: none">
+          <li class="textCenter">
+            <span class="cursorPointer" (click)="loadEarlierPageOfChats(group)">Load Previous Chat</span>
+            <br>
+            <span *ngIf="loadingPreviousChat">Loading...</span>
+          </li>
+          <li class="clearfix" *ngFor="let message of group.messageList">
+            <div class="message-data" [ngClass]="{'align-right': message.senderId === userId}">
+              <span class="message-data-time">{{message?.createdOn | date: 'medium' }}</span> &nbsp;
+              <span class="message-data-name floatLeft" *ngIf="message.senderId !== userId"></span>
+              <span class="message-data-name" *ngIf="message.senderId ==userId">me</span> &nbsp;
+              <span class="message-data-name" *ngIf="message.senderId !==userId">{{message?.senderName}}</span>&nbsp;
+              <i class="fa fa-circle admin" *ngIf="message.messageFromAdmin||message.senderId===group.adminId"></i>
+              <i class="fa fa-circle other" *ngIf="!message.messageFromAdmin||!message.senderId===group.adminId"></i>
+
+            </div>
+            <div class="message" [ngClass]="{'adminMessage':message.messageFromAdmin,'otherMessage':!message.messageFromAdmin}">
+              {{message?.message }}
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="notif pl-3" *ngIf="isTyping">
+        <small  *ngIf="isTyping" style="font-style: italic">{{typingNotification}}...</small>
+      </div>
+
+      <div class="chat-message  clearfix p-2" style="display: inline-flex;width: 100%;">
+        <textarea style="width: 100%;" name="message-to-send" id="message-to-send" [(ngModel)]="messageText" 
+        (keyup)="startTyping(group.groupName)"
+          (blur)="stopTyping(group.groupName)" (keydown)="sendMessageUsingKeypress($event,group)" placeholder="Type your message"
+          rows="2">
+          </textarea>
+        <div>
+          <i class="fa fa-paper-plane  cursorPointer fa-lg" (click)="sendMessage(group)" aria-hidden="true"></i>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
